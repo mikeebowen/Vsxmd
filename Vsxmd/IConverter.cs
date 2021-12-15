@@ -17,6 +17,6 @@ namespace Vsxmd
         /// Convert to Markdown syntax.
         /// </summary>
         /// <returns>The generated Markdown content.</returns>
-        IEnumerable<string> ToMarkdown();
+        Dictionary<string, string> ToMarkdown();
     }
 }

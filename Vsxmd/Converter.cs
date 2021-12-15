@@ -30,18 +30,18 @@ namespace Vsxmd
         /// </summary>
         /// <param name="document">The XML document.</param>
         /// <returns>The generated Markdown content.</returns>
-        public static IEnumerable<string> ToMarkdown(XDocument document) =>
+        public static Dictionary<string, string> ToMarkdown(XDocument document) =>
             new Converter(document).ToMarkdown();
 
         /// <inheritdoc/>
-        public IEnumerable<string> ToMarkdown() =>
+        public Dictionary<string, string> ToMarkdown() =>
             ToUnits(this.document.Root);
                 //.Select(x => x.ToMarkdown().Join("\n\n").Suffix("\n"));
                 //.Select(x => x.ToMarkdown().Join("\n\n").Suffix("\n"));
                 //.Join("\n\n")
                 //.Suffix("\n");
 
-        private static IEnumerable<string> ToUnits(XElement docElement)
+        private static Dictionary<string, string> ToUnits(XElement docElement)
         {
             // assembly unit
             var assemblyUnit = new AssemblyUnit(docElement.Element("assembly"));
@@ -80,14 +80,13 @@ namespace Vsxmd
                 }
             }
 
-            List<string> mds = new List<string>();
+            Dictionary<string, string> mds = new Dictionary<string, string>();
 
             foreach (KeyValuePair<string, List<MemberUnit>> unit in units)
             {
-                var foo = unit.Value.Select(x => x.ToMarkdown());
                 string md = unit.Value.Select(x => x.ToMarkdown().Join("\n\n").Suffix("\n")).Join("\n");
 
-                mds.Add(md);
+                mds[unit.Key] = md;
             }
 
             return mds;

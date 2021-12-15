@@ -7,6 +7,7 @@
 namespace Vsxmd
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -60,11 +61,16 @@ namespace Vsxmd
 
                 Directory.CreateDirectory(dir);
 
-                int i = 0;
-                foreach (string md in markdown)
+                foreach (KeyValuePair<string, string> md in markdown)
                 {
-                    string path = markdownPath.Replace(".md", $"-{i++}.md", StringComparison.Ordinal);
-                    File.WriteAllText(path, md);
+                    //string path = markdownPath.Replace(".md", $"{md.Key}.md", StringComparison.Ordinal);
+                    string folder = string.Join(Path.DirectorySeparatorChar, md.Key.Split(".").SkipLast(1));
+                    string mdPath = Path.Join(dir, folder);
+                    Directory.CreateDirectory(mdPath);
+
+                    string path = Path.Join(mdPath, $"{md.Key}.md");
+
+                    File.WriteAllText(path, md.Value);
                 }
 
                 string vsxmdAutoDeleteXml = args.ElementAtOrDefault(2);
