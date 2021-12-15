@@ -61,6 +61,8 @@ namespace Vsxmd.Units
         /// <value>The link pointing to this member unit.</value>
         internal string Link => this.name.Link;
 
+        internal string NamespaceName => this.name.Namespace;
+
         private IEnumerable<string> InheritDoc =>
             this.GetChild("inheritdoc") == null
                 ? Enumerable.Empty<string>()

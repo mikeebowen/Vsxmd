@@ -30,17 +30,18 @@ namespace Vsxmd
         /// </summary>
         /// <param name="document">The XML document.</param>
         /// <returns>The generated Markdown content.</returns>
-        public static string ToMarkdown(XDocument document) =>
+        public static IEnumerable<string> ToMarkdown(XDocument document) =>
             new Converter(document).ToMarkdown();
 
         /// <inheritdoc/>
-        public string ToMarkdown() =>
-            ToUnits(this.document.Root)
-                .SelectMany(x => x.ToMarkdown())
-                .Join("\n\n")
-                .Suffix("\n");
+        public IEnumerable<string> ToMarkdown() =>
+            ToUnits(this.document.Root);
+                //.Select(x => x.ToMarkdown().Join("\n\n").Suffix("\n"));
+                //.Select(x => x.ToMarkdown().Join("\n\n").Suffix("\n"));
+                //.Join("\n\n")
+                //.Suffix("\n");
 
-        private static IEnumerable<IUnit> ToUnits(XElement docElement)
+        private static IEnumerable<string> ToUnits(XElement docElement)
         {
             // assembly unit
             var assemblyUnit = new AssemblyUnit(docElement.Element("assembly"));
@@ -59,9 +60,37 @@ namespace Vsxmd
             // table of contents
             var tableOfContents = new TableOfContents(memberUnits);
 
-            return new IUnit[] { assemblyUnit }
-                .Concat(new[] { tableOfContents })
-                .Concat(memberUnits);
+            //return new IUnit[] { assemblyUnit }
+            //    .Concat(new[] { tableOfContents }),
+            //    .Concat(memberUnits);
+            //return memberUnits;
+
+            Dictionary<string, List<MemberUnit>> units = new Dictionary<string, List<MemberUnit>>();
+
+            foreach (MemberUnit memberUnit in memberUnits)
+            {
+                if (units.ContainsKey(memberUnit.TypeName))
+                {
+                    units[memberUnit.TypeName].Add(memberUnit);
+                }
+                else
+                {
+                    units[memberUnit.TypeName] = new List<MemberUnit>();
+                    units[memberUnit.TypeName].Add(memberUnit);
+                }
+            }
+
+            List<string> mds = new List<string>();
+
+            foreach (KeyValuePair<string, List<MemberUnit>> unit in units)
+            {
+                var foo = unit.Value.Select(x => x.ToMarkdown());
+                string md = unit.Value.Select(x => x.ToMarkdown().Join("\n\n").Suffix("\n")).Join("\n");
+
+                mds.Add(md);
+            }
+
+            return mds;
         }
     }
 }
