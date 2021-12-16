@@ -90,7 +90,7 @@ namespace Vsxmd.Units
             ? $"{this.Href.ToAnchor()}### {this.FriendlyName.Escape()} `{this.Kind.ToLowerString()}`"
             : this.Kind == MemberKind.Constructor ||
               this.Kind == MemberKind.Method
-            ? $"{this.Href.ToAnchor()}### {this.FriendlyName.Escape()}({this.paramNames.Join(",")}) `{this.Kind.ToLowerString()}`"
+            ? $"{this.Href.ToAnchor()}### {this.FriendlyName.Escape().Replace("#ctor", this.TypeShortName, StringComparison.Ordinal)}({this.paramNames.Join(",")}) `{this.Kind.ToLowerString()}`"
             : string.Empty;
 
         /// <summary>
